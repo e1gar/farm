@@ -23,7 +23,7 @@
     prop_trough_empty: "assets/prop_trough_empty.png",
     prop_trough_food: "assets/prop_trough_food.png",
     prop_wool: "assets/prop_wool.png",
-    ui_hand: "assets/ui_hand.svg"
+    ui_hand: "assets/ui_hand.svg?1"
   };
 
   /* Per-round parameterization (DESIGN §3.2) */
