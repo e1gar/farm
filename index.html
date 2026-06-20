@@ -53,12 +53,17 @@
     }
 
     /* ---- Layers (z-order per DESIGN §4) ---- */
-    .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+    .bg { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; z-index: 1; pointer-events: none; }
     .animals { z-index: 10; }
     .props   { z-index: 15; }
     .inv     { z-index: 20; }
     .hand    { z-index: 30; }
     .ui      { z-index: 40; }
+
+    /* ---- Принудительный вывод интерфейса на передний план (z-index: 50) ---- */
+    .title, .subtitle, .progress, .question, .msg, .btn, .answers, .invite-card {
+      z-index: 50;
+    }
 
     img { -webkit-user-drag: none; }
 
