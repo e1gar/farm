@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Создать приглашение — конструктор</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&display=swap&subset=cyrillic"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --font: "Noto Sans", system-ui, "Segoe UI", Roboto, sans-serif;
+      --ink: #3a2b22;
+      --accent: #d96f4d;
+      --ok: #4f9e4a;
+      --warn: #d98a1f;
+      --bad: #c4452d;
+      --line: #e3d8cf;
+      --bg: #fdf7f0;
+      --panel: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: var(--font); color: var(--ink);
+      background: var(--bg); line-height: 1.45; padding: 24px 16px 80px;
+    }
+    .wrap { max-width: 640px; margin: 0 auto; }
+    h1 { font-size: 28px; margin: 8px 0 4px; }
+    .lede { color: #7a6a5e; margin: 0 0 28px; font-size: 15px; }
+
+    fieldset {
+      border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px 18px 22px; margin: 0 0 22px; background: var(--panel);
+    }
+    legend { font-weight: 800; padding: 0 8px; font-size: 15px; color: var(--accent); }
+
+    label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
+    input[type="text"], input[type="number"], textarea {
+      width: 100%; font-family: var(--font); font-size: 16px; color: var(--ink);
+      border: 1.5px solid var(--line); border-radius: 10px; padding: 12px 14px; background: #fff;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 64px; }
+    .row { display: flex; gap: 14px; }
+    .row > div { flex: 1; }
+
+    .q-block { border: 1px dashed var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+    .q-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .q-num { background: var(--accent); color: #fff; border-radius: 50%; width: 24px; height: 24px;
+             display: inline-flex; align-items: center; justify-content: center; font-size: 13px; }
+    .answer-pick { display: flex; gap: 10px; margin-top: 10px; }
+    .answer-pick label {
+      flex: 1; margin: 0; text-align: center; padding: 10px; border: 1.5px solid var(--line);
+      border-radius: 10px; cursor: pointer; font-weight: 700; transition: all .12s ease;
+    }
+    .answer-pick input { display: none; }
+    .answer-pick input:checked + span { color: #fff; }
+    .answer-pick label.yes:has(input:checked) { background: var(--ok); border-color: var(--ok); }
+    .answer-pick label.no:has(input:checked)  { background: var(--accent); border-color: var(--accent); }
+    .hint { font-size: 12px; color: #9a8a7d; margin-top: 4px; }
+    .counter { font-size: 12px; color: #9a8a7d; text-align: right; margin-top: 4px; }
+    .counter.over { color: var(--bad); font-weight: 700; }
+
+    .actions { position: sticky; bottom: 0; background: var(--bg); padding: 16px 0 4px; }
+    button.gen {
+      width: 100%; font-family: var(--font); font-weight: 800; font-size: 18px;
+      background: var(--accent); color: #fff; border: none; border-radius: 12px;
+      padding: 16px; cursor: pointer;
+    }
+    button.gen:active { transform: translateY(2px); }
+
+    .meter { margin-top: 16px; }
+    .meter-bar { height: 10px; border-radius: 6px; background: #ececec; overflow: hidden; }
+    .meter-fill { height: 100%; width: 0; background: var(--ok); transition: width .2s ease, background .2s ease; }
+    .meter-label { font-size: 13px; margin-top: 6px; display: flex; justify-content: space-between; }
+    .meter-label .state-ok { color: var(--ok); font-weight: 700; }
+    .meter-label .state-warn { color: var(--warn); font-weight: 700; }
+    .meter-label .state-bad { color: var(--bad); font-weight: 700; }
+
+    .out { margin-top: 18px; display: none; }
+    .out.show { display: block; }
+    .out textarea { font-size: 13px; color: #444; background: #fbfbfb; min-height: 90px; }
+    .out-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .out-row a, .out-row button {
+      font-family: var(--font); font-weight: 700; font-size: 14px; text-decoration: none;
+      border-radius: 10px; padding: 11px 16px; border: 1.5px solid var(--line); background: #fff;
+      color: var(--ink); cursor: pointer;
+    }
+    .out-row a.primary { background: var(--ok); border-color: var(--ok); color: #fff; }
+    .copied { color: var(--ok); font-size: 13px; font-weight: 700; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Конструктор приглашения 🎂</h1>
+    <p class="lede">Заполните форму — получите одну ссылку. Без регистрации и сервера: вся игра живёт прямо в ссылке.</p>
+
+    <form id="form" autocomplete="off">
+      <fieldset>
+        <legend>О ребёнке</legend>
+        <div class="row">
+          <div>
+            <label for="name">Имя</label>
+            <input type="text" id="name" maxlength="40" value="Маша" required />
+          </div>
+          <div>
+            <label for="age">Возраст</label>
+            <input type="number" id="age" min="1" max="99" value="7" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4 вопроса</legend>
+        <p class="hint">Отметьте правильный ответ для каждого вопроса. Правильный ответ может быть «Да» или «Нет».</p>
+        <div id="questions"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Приглашение</legend>
+        <div class="row">
+          <div>
+            <label for="i_d">Дата</label>
+            <input type="text" id="i_d" maxlength="40" value="12 июля" />
+          </div>
+          <div>
+            <label for="i_t">Время</label>
+            <input type="text" id="i_t" maxlength="20" value="15:00" />
+          </div>
+        </div>
+        <label for="i_p">Место</label>
+        <input type="text" id="i_p" maxlength="120" value="Кафе «Сказка», ул. Ленина 10" />
+        <label for="i_m">Сообщение (необязательно)</label>
+        <textarea id="i_m" maxlength="120">Приходи на мой день рождения!</textarea>
+        <div class="counter" id="msg-counter"></div>
+      </fieldset>
+
+      <div class="meter">
+        <div class="meter-bar"><div class="meter-fill" id="meter-fill"></div></div>
+        <div class="meter-label">
+          <span id="meter-state" class="state-ok">Длина ссылки в норме</span>
+          <span id="meter-num">0 / 800</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="gen">Создать ссылку</button>
+      </div>
+    </form>
+
+    <div class="out" id="out">
+      <label for="link">Ваша ссылка</label>
+      <textarea id="link" readonly></textarea>
+      <div class="out-row">
+        <a id="play" class="primary" target="_blank" rel="noopener">▶ Открыть игру</a>
+        <button type="button" id="copy">Копировать ссылку</button>
+        <span class="copied" id="copied" hidden>Скопировано!</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="vendor/lz-string.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var SOFT_LIMIT = 800; // DESIGN §7.3 — warn above 800 encoded chars
+      var DEFAULT_Q = [
+        ["Маша любит рисовать?", 1],
+        ["Маша боится собак?", 0],
+        ["У Маши есть кот?", 1],
+        ["Маша умеет плавать?", 1]
+      ];
+
+      var qWrap = document.getElementById("questions");
+
+      // Build the 4 question blocks.
+      DEFAULT_Q.forEach(function (q, i) {
+        var block = document.createElement("div");
+        block.className = "q-block";
+        block.innerHTML =
+          '<div class="q-head"><span class="q-num">' + (i + 1) + '</span> Вопрос ' + (i + 1) + '</div>' +
+          '<input type="text" class="q-text" maxlength="100" value="" />' +
+          '<div class="counter q-counter"></div>' +
+          '<div class="answer-pick">' +
+            '<label class="yes"><input type="radio" name="ans' + i + '" value="1"><span>✔ Да</span></label>' +
+            '<label class="no"><input type="radio" name="ans' + i + '" value="0"><span>✘ Нет</span></label>' +
+          '</div>';
+        qWrap.appendChild(block);
+        block.querySelector(".q-text").value = q[0];
+        block.querySelector('input[value="' + q[1] + '"]').checked = true;
+      });
+
+      var $ = function (id) { return document.getElementById(id); };
+
+      function collect() {
+        var qBlocks = qWrap.querySelectorAll(".q-block");
+        var q = [];
+        qBlocks.forEach(function (b, i) {
+          var text = b.querySelector(".q-text").value.trim().slice(0, 140);
+          var picked = b.querySelector('input[name="ans' + i + '"]:checked');
+          q.push([text, picked ? Number(picked.value) : 1]);
+        });
+        var ageVal = parseInt($("age").value, 10);
+        return {
+          v: 1,
+          n: $("name").value.trim().slice(0, 140) || "Друг",
+          a: isNaN(ageVal) ? undefined : ageVal,
+          q: q,
+          i: {
+            d: $("i_d").value.trim().slice(0, 140),
+            t: $("i_t").value.trim().slice(0, 140),
+            p: $("i_p").value.trim().slice(0, 140),
+            m: $("i_m").value.trim().slice(0, 140)
+          }
+        };
+      }
+
+      function encode(cfg) {
+        return LZString.compressToEncodedURIComponent(JSON.stringify(cfg));
+      }
+
+      function playUrlBase() {
+        // play page = index.html next to builder.html
+        return window.location.href.replace(/builder\.html.*$/, "index.html");
+      }
+
+      function updateMeter() {
+        var enc = encode(collect());
+        var n = enc.length;
+        var pct = Math.min(100, Math.round((n / SOFT_LIMIT) * 100));
+        var fill = $("meter-fill");
+        fill.style.width = pct + "%";
+
+        var state = $("meter-state");
+        $("meter-num").textContent = n + " / " + SOFT_LIMIT;
+
+        if (n <= SOFT_LIMIT * 0.75) {
+          fill.style.background = "var(--ok)";
+          state.className = "state-ok";
+          state.textContent = "Длина ссылки в норме";
+        } else if (n <= SOFT_LIMIT) {
+          fill.style.background = "var(--warn)";
+          state.className = "state-warn";
+          state.textContent = "Приближается к пределу";
+        } else {
+          fill.style.background = "var(--bad)";
+          state.className = "state-bad";
+          state.textContent = "Слишком длинно — сократите тексты";
+        }
+        return enc;
+      }
+
+      function updateCounter(input, counter, max) {
+        var n = input.value.length;
+        counter.textContent = n + " / " + max;
+        counter.classList.toggle("over", n > max);
+      }
+
+      // Live counters + meter
+      qWrap.querySelectorAll(".q-block").forEach(function (b) {
+        var input = b.querySelector(".q-text");
+        var counter = b.querySelector(".q-counter");
+        input.addEventListener("input", function () {
+          updateCounter(input, counter, 100);
+          updateMeter();
+        });
+        updateCounter(input, counter, 100);
+      });
+      (function () {
+        var m = $("i_m"), c = $("msg-counter");
+        m.addEventListener("input", function () { updateCounter(m, c, 120); updateMeter(); });
+        updateCounter(m, c, 120);
+      })();
+      ["name", "age", "i_d", "i_t", "i_p"].forEach(function (id) {
+        $(id).addEventListener("input", updateMeter);
+      });
+
+      // Generate link
+      $("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var enc = updateMeter();
+        var url = playUrlBase() + "?d=" + enc;
+        $("link").value = url;
+        $("play").href = url;
+        $("out").classList.add("show");
+        $("out").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      // Copy
+      $("copy").addEventListener("click", function () {
+        var link = $("link");
+        link.select();
+        link.setSelectionRange(0, 99999);
+        var done = function () {
+          var c = $("copied");
+          c.hidden = false;
+          setTimeout(function () { c.hidden = true; }, 1800);
+        };
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(link.value).then(done, function () { document.execCommand("copy"); done(); });
+        } else {
+          document.execCommand("copy");
+          done();
+        }
+      });
+
+      updateMeter();
+    })();
+  </script>
+</body>
+</html>
