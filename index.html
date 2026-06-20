@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <title>День рождения — игра</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700;800&display=swap&subset=cyrillic"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --font: "Noto Sans", system-ui, "Segoe UI", Roboto, sans-serif;
+      --ink: #3a2b22;
+      --yes: #6dbf67;
+      --yes-d: #4f9e4a;
+      --no: #ef8d6b;
+      --no-d: #d96f4d;
+      --btn: #ffcf5c;
+      --btn-d: #e9b53f;
+      --panel: rgba(255, 255, 255, 0.86);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: #1a1410;
+      font-family: var(--font);
+      color: var(--ink);
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    #frame { position: fixed; inset: 0; }
+
+    /* Fixed virtual stage (1080x1920); scaled to fit any phone via JS transform. */
+    #stage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 1920px;
+      transform-origin: top left;
+      overflow: hidden;
+      background: #cfeaff;
+      user-select: none;
+    }
+
+    /* ---- Layers (z-order per DESIGN §4) ---- */
+    .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; pointer-events: none; }
+    .animals { z-index: 10; }
+    .props   { z-index: 15; }
+    .inv     { z-index: 20; }
+    .hand    { z-index: 30; }
+    .ui      { z-index: 40; }
+
+    img { -webkit-user-drag: none; user-drag: none; }
+
+    /* ---- Animals row (top) ---- */
+    .animal {
+      position: absolute; top: 150px; width: 230px; height: 230px;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.18));
+      transition: opacity .4s ease, transform .6s cubic-bezier(.22,.9,.3,1);
+    }
+    .animal.dim { opacity: .35; filter: grayscale(.6) drop-shadow(0 6px 6px rgba(0,0,0,.15)); }
+    .animal.active { animation: bob 1.6s ease-in-out infinite; }
+    .animal[data-i="0"] { left: 70px; }
+    .animal[data-i="1"] { left: 320px; }
+    .animal[data-i="2"] { left: 570px; }
+    .animal[data-i="3"] { left: 820px; }
+    @keyframes bob { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-18px) rotate(3deg)} }
+
+    /* ---- Center reward prop ---- */
+    .reward-prop {
+      position: absolute; left: 50%; top: 760px; width: 420px; height: 420px;
+      object-fit: contain; transform: translateX(-50%) scale(0);
+      filter: drop-shadow(0 14px 16px rgba(0,0,0,0.22));
+    }
+    .reward-prop.show { animation: pop .55s cubic-bezier(.18,1.3,.4,1) forwards; }
+    @keyframes pop { 0%{transform:translateX(-50%) scale(0);opacity:0} 70%{transform:translateX(-50%) scale(1.12);opacity:1} 100%{transform:translateX(-50%) scale(1);opacity:1} }
+    .reward-prop.fly { animation: flyToInv .8s ease-in-out forwards; }
+    @keyframes flyToInv { 0%{transform:translateX(-50%) scale(1);opacity:1} 100%{transform:translate(-50%,740px) scale(.35);opacity:0} }
+
+    /* ---- Hand cursor ---- */
+    .ui-hand {
+      position: absolute; left: 50%; top: 1150px; width: 170px;
+      transform: translateX(-50%);
+      animation: handPulse 1s ease-in-out infinite; pointer-events: none;
+    }
+    @keyframes handPulse { 0%,100%{transform:translateX(-50%) scale(1) translateY(0)} 50%{transform:translateX(-50%) scale(1.12) translateY(-14px)} }
+
+    /* ---- Inventory grid (bottom) ---- */
+    .inv-grid {
+      position: absolute; left: 50%; bottom: 360px; transform: translateX(-50%);
+      display: grid; grid-template-columns: repeat(4, 160px); gap: 28px;
+    }
+    .slot {
+      width: 160px; height: 160px; border-radius: 28px;
+      background: rgba(255,255,255,0.45);
+      border: 5px dashed rgba(58,43,34,0.35);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .slot img { width: 78%; height: 78%; object-fit: contain; }
+    .slot.filled { animation: slotPop .4s ease; border-style: solid; border-color: var(--yes-d); background: rgba(255,255,255,0.7); }
+    @keyframes slotPop { 0%{transform:scale(.6);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+    /* ---- Text & panels ---- */
+    .title {
+      position: absolute; left: 0; right: 0; top: 220px; text-align: center;
+      font-size: 96px; font-weight: 800; color: #fff;
+      text-shadow: 0 6px 0 rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.3); padding: 0 40px;
+    }
+    .subtitle {
+      position: absolute; left: 0; right: 0; top: 420px; text-align: center;
+      font-size: 52px; font-weight: 700; color: #fff;
+      text-shadow: 0 3px 6px rgba(0,0,0,.35); padding: 0 60px;
+    }
+    .progress {
+      position: absolute; left: 0; right: 0; top: 410px; text-align: center;
+      font-size: 40px; font-weight: 700; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.4);
+    }
+    .question {
+      position: absolute; left: 60px; right: 60px; top: 470px;
+      background: var(--panel); border-radius: 40px; padding: 44px 40px;
+      text-align: center; font-size: 56px; font-weight: 700; line-height: 1.25;
+      box-shadow: 0 12px 28px rgba(0,0,0,.18); min-height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .msg {
+      position: absolute; left: 60px; right: 60px; top: 700px; text-align: center;
+      font-size: 64px; font-weight: 800; color: #fff;
+      text-shadow: 0 4px 10px rgba(0,0,0,.45); line-height: 1.3;
+    }
+
+    /* ---- Buttons ---- */
+    .btn {
+      font-family: var(--font); font-weight: 800; border: none; border-radius: 36px;
+      color: #fff; cursor: pointer; box-shadow: 0 10px 0 rgba(0,0,0,.18);
+      transition: transform .08s ease, box-shadow .08s ease; min-width: 56px; min-height: 56px;
+    }
+    .btn:active { transform: translateY(6px); box-shadow: 0 4px 0 rgba(0,0,0,.18); }
+    .btn-primary {
+      position: absolute; left: 50%; transform: translateX(-50%); bottom: 200px;
+      width: 620px; padding: 48px 0; font-size: 64px;
+      background: var(--btn); color: var(--ink); box-shadow: 0 12px 0 var(--btn-d);
+    }
+    .btn-primary:active { transform: translateX(-50%) translateY(6px); box-shadow: 0 6px 0 var(--btn-d); }
+    .answers {
+      position: absolute; left: 60px; right: 60px; bottom: 380px;
+      display: flex; gap: 50px; justify-content: center;
+    }
+    .btn-answer { flex: 1; max-width: 420px; padding: 70px 0; font-size: 76px; }
+    .btn-yes { background: var(--yes); box-shadow: 0 12px 0 var(--yes-d); }
+    .btn-yes:active { box-shadow: 0 6px 0 var(--yes-d); }
+    .btn-no  { background: var(--no); box-shadow: 0 12px 0 var(--no-d); }
+    .btn-no:active { box-shadow: 0 6px 0 var(--no-d); }
+
+    /* ---- Invite card ---- */
+    .invite-card {
+      position: absolute; left: 70px; right: 70px; top: 360px;
+      background: var(--panel); border-radius: 48px; padding: 70px 56px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.22); text-align: center;
+    }
+    .invite-card h1 { font-size: 84px; margin: 0 0 24px; color: var(--no-d); }
+    .invite-card .who { font-size: 60px; font-weight: 800; margin: 0 0 40px; }
+    .invite-row { font-size: 50px; font-weight: 700; margin: 18px 0; }
+    .invite-row span { color: var(--no-d); }
+    .invite-msg { font-size: 46px; font-weight: 400; margin-top: 44px; line-height: 1.35; }
+
+    /* ---- Loader ---- */
+    #loader {
+      position: absolute; inset: 0; z-index: 100; background: #cfeaff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 60px;
+    }
+    .spinner {
+      width: 140px; height: 140px; border: 18px solid rgba(58,43,34,.18);
+      border-top-color: var(--no-d); border-radius: 50%; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loader p { font-size: 48px; font-weight: 700; color: var(--ink); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="frame">
+    <div id="stage">
+      <div id="loader">
+        <div class="spinner"></div>
+        <p>Загрузка…</p>
+      </div>
+      <!-- game.js owns everything inside #scene -->
+      <div id="scene"></div>
+    </div>
+  </div>
+
+  <script src="vendor/lz-string.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
