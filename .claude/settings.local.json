@@ -1,0 +1,8 @@
+{
+  "outputStyle": "Proactive",
+  "permissions": {
+    "allow": [
+      "Write"
+    ]
+  }
+}
