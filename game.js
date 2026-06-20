@@ -23,7 +23,7 @@
     prop_trough_empty: "assets/prop_trough_empty.png",
     prop_trough_food: "assets/prop_trough_food.png",
     prop_wool: "assets/prop_wool.png",
-    ui_hand: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='%23ffcf5c' stroke='%233a2b22' stroke-width='2.5' stroke-linejoin='round'><path d='M10 26V15a3 3 0 0 1 6 0v-4a2.5 2.5 0 0 1 5 0v2a2.5 2.5 0 0 1 5 0v5a7 7 0 0 1-7 7h-4a5 5 0 0 1-5-5z'/><path d='M10 16.5V6.5a3 3 0 0 1 6 0v7.5' fill='none'/></svg>"
+    ui_hand: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHBhdGggZD0nTTEwIDI2VjE1YTMgMyAwIDAgMSA2IDB2LTRhMi41IDIuNSAwIDAgMSA1IDB2MmEyLjUgMi41IDAgMCAxIDUgMHY1YTcgNyAwIDAgMS03IDdoLTRhNSA1IDAgMCAxLTUtNXonIGZpbGw9JyNmZmNmNWMnIHN0cm9rZT0nIzNhMmIyMicgc3Ryb2tlLXdpZHRoPScyLjUnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnLz48cGF0aCBkPSdNMTAgMTYuNVY2LjVhMyAzIDAgMCAxIDYgMHY3LjUnIGZpbGw9J25vbmUnIHN0cm9rZT0nIzNhMmIyMicgc3Ryb2tlLXdpZHRoPScyLjUnLz48L3N2Zz4K"
   };
 
   /* Per-round parameterization (DESIGN §3.2) */
