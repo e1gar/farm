@@ -23,7 +23,7 @@
     prop_trough_empty: "assets/prop_trough_empty.png",
     prop_trough_food: "assets/prop_trough_food.png",
     prop_wool: "assets/prop_wool.png",
-    ui_hand: "assets/ui_hand.svg?1"
+    ui_hand: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 20a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm-15 35a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm30 0a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm-25 30a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm25 0a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm-15 30a10 10 0 1 0 0-20 10 10 0 0 0 0 20z' fill='%23ffffff' stroke='%233a2b22' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M35 55h30v30H35z' fill='%23ffffff' stroke='%233a2b22' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E"
   };
 
   /* Per-round parameterization (DESIGN §3.2) */
@@ -112,11 +112,10 @@
   var STAGE_W = 1080, STAGE_H = 1920;
   function fitStage() {
     var stage = document.getElementById("stage");
+    if (!stage) return;
     var scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
-    var w = STAGE_W * scale, h = STAGE_H * scale;
-    stage.style.transform =
-      "translate(" + (window.innerWidth - w) / 2 + "px," +
-      (window.innerHeight - h) / 2 + "px) scale(" + scale + ")";
+    // JS больше не сдвигает экран вручную, он только передает масштаб!
+    stage.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
   }
 
   /* ---- Asset preload (DESIGN §3.3) -------------------------------------- */
