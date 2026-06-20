@@ -23,7 +23,7 @@
     prop_trough_empty: "assets/prop_trough_empty.png",
     prop_trough_food: "assets/prop_trough_food.png",
     prop_wool: "assets/prop_wool.png",
-    ui_hand: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHBhdGggZD0nTTEwIDI2VjE1YTMgMyAwIDAgMSA2IDB2LTRhMi41IDIuNSAwIDAgMSA1IDB2MmEyLjUgMi41IDAgMCAxIDUgMHY1YTcgNyAwIDAgMS03IDdoLTRhNSA1IDAgMCAxLTUtNXonIGZpbGw9JyNmZmNmNWMnIHN0cm9rZT0nIzNhMmIyMicgc3Ryb2tlLXdpZHRoPScyLjUnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnLz48cGF0aCBkPSdNMTAgMTYuNVY2LjVhMyAzIDAgMCAxIDYgMHY3LjUnIGZpbGw9J25vbmUnIHN0cm9rZT0nIzNhMmIyMicgc3Ryb2tlLXdpZHRoPScyLjUnLz48L3N2Zz4K"
+    ui_hand: "assets/ui_hand.svg"
   };
 
   /* Per-round parameterization (DESIGN §3.2) */
